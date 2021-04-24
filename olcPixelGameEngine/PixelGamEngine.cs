@@ -332,7 +332,7 @@ namespace olc
         }
 
         // Draws a circle located at (x,y) with radius
-        public void DrawCircle(vi2d pos, Int32 radius, Pixel p, byte mask = 0xFF) => DrawCircle(pos.x, pos.y, radius, p, mask);
+        public void DrawCircle(vi2d pos, int radius, Pixel p, byte mask = 0xFF) => DrawCircle(pos.x, pos.y, radius, p, mask);
         public void DrawCircle(int x, int y, int radius, Pixel p, byte mask = 0xFF)
         { // Thanks to IanM-Matrix1 #PR121
             if (radius < 0 || x < -radius || y < -radius || x - GetDrawTargetWidth() > radius || y - GetDrawTargetHeight() > radius)
@@ -347,16 +347,16 @@ namespace olc
                 while (y0 >= x0) // only formulate 1/8 of circle
                 {
                     // Draw even octants
-                    if ((mask & 0x01) == 1) Draw(x + x0, y - y0, p);// Q6 - upper right right
-                    if ((mask & 0x04) == 1) Draw(x + y0, y + x0, p);// Q4 - lower lower right
-                    if ((mask & 0x10) == 1) Draw(x - x0, y + y0, p);// Q2 - lower left left
-                    if ((mask & 0x40) == 1) Draw(x - y0, y - x0, p);// Q0 - upper upper left
+                    if ((mask & 0x01) != 0) Draw(x + x0, y - y0, p);// Q6 - upper right right
+                    if ((mask & 0x04) != 0) Draw(x + y0, y + x0, p);// Q4 - lower lower right
+                    if ((mask & 0x10) != 0) Draw(x - x0, y + y0, p);// Q2 - lower left left
+                    if ((mask & 0x40) != 0) Draw(x - y0, y - x0, p);// Q0 - upper upper left
                     if (x0 != 0 && x0 != y0)
                     {
-                        if ((mask & 0x02) == 1) Draw(x + y0, y - x0, p);// Q7 - upper upper right
-                        if ((mask & 0x08) == 1) Draw(x + x0, y + y0, p);// Q5 - lower right right
-                        if ((mask & 0x20) == 1) Draw(x - y0, y + x0, p);// Q3 - lower lower left
-                        if ((mask & 0x80) == 1) Draw(x - x0, y - y0, p);// Q1 - upper left left
+                        if ((mask & 0x02) !=0) Draw(x + y0, y - x0, p);// Q7 - upper upper right
+                        if ((mask & 0x08) != 0) Draw(x + x0, y + y0, p);// Q5 - lower right right
+                        if ((mask & 0x20) !=0) Draw(x - y0, y + x0, p);// Q3 - lower lower left
+                        if ((mask & 0x80) !=0) Draw(x - x0, y - y0, p);// Q1 - upper left left
                     }
 
                     if (d < 0)

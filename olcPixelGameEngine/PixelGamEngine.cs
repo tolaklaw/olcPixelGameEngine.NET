@@ -1,6 +1,7 @@
 ﻿#define OLC_GFX_OPENGL33
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using static olc.Const;
 using static olc.Pixel;
@@ -20,7 +21,7 @@ namespace olc
             // Bring in relevant Platform &Rendering systems depending on compiler parameters
             olc_ConfigureSystem();
             clock = new Clock();
-            m_tp1 = clock.UtcNow;
+            m_tp1 = Stopwatch.GetTimestamp();
         }
 
         public rcode Construct(int screen_w, int screen_h, int pixel_w, int pixel_h,bool full_screen = false, bool vsync = false, bool cohesion = false)
@@ -1135,8 +1136,6 @@ namespace olc
         bool bPixelCohesion = false;
         DecalMode nDecalMode = DecalMode.NORMAL;
         Func<int, int, Pixel, Pixel, Pixel> funcPixelMode;
-        //std::function<Pixel(const int x,int y, Pixel&, Pixel&)> funcPixelMode;
-        //std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
         List<vi2d> vFontSpacing;
 
         // State of keyboard		
@@ -1292,25 +1291,19 @@ namespace olc
             foreach (var c in vSpacing) vFontSpacing.Add(new vi2d(c >> 4, c & 15));
         }
 
-        DateTime m_tp2;
-        DateTime m_tp1;
-        int tick =0;
+        long m_tp2;
+        long m_tp1;
+
         void olc_CoreUpdate()
         {
-            //Console.WriteLine(Const.outputlog());
-            //tick++;
             // Handle Timing
-            //m_tp2 = std::chrono::system_clock::now();
-            m_tp2 = clock.UtcNow;
+            float elapsedTime = 0 ;
+            m_tp2 = Stopwatch.GetTimestamp();
             
-            //std::chrono::duration<float> elapsedTime = m_tp2 - m_tp1;
-            float elapsedTime = (float)(( m_tp2 - m_tp1).Milliseconds)/1000;
+            long delta = m_tp2-m_tp1;
             m_tp1 = m_tp2;
-            //mtp1 = 
-            // Our time per frame coefficient
-            //float fElapsedTime = elapsedTime.count();
-            float fElapsedTime = (float)elapsedTime;
 
+            float fElapsedTime = delta / (float)Stopwatch.Frequency;
             fLastElapsed = fElapsedTime;
 
             // Some platforms will need to check for events

@@ -878,8 +878,8 @@ namespace olc
         public void DrawPartialDecal(vf2d pos, vf2d size, Decal decal, vf2d source_pos, vf2d source_size, Pixel tint)
         {
             vf2d vScreenSpacePos = new vf2d(
-                (float)((Math.Floor(pos.x) * vInvScreenSize.x) * 2.0f - 1.0f),
-                (float)(((Math.Floor(pos.y) * vInvScreenSize.y) * 2.0f - 1.0f) * -1.0f)
+                (MathF.Floor(pos.x) * vInvScreenSize.x) * 2.0f - 1.0f,
+                ((MathF.Floor(pos.y) * vInvScreenSize.y) * 2.0f - 1.0f) * -1.0f
             );
             vf2d vScreenSpaceDim = new vf2d(
                 vScreenSpacePos.x + (2.0f * size.x * vInvScreenSize.x),
@@ -893,7 +893,7 @@ namespace olc
             di.pos = new List<vf2d>() { new vf2d(vScreenSpacePos.x, vScreenSpacePos.y), new vf2d(vScreenSpacePos.x, vScreenSpaceDim.y), new vf2d(vScreenSpaceDim.x, vScreenSpaceDim.y), new vf2d(vScreenSpaceDim.x, vScreenSpacePos.y) };
             vf2d uvtl = (source_pos) * decal.vUVScale;
             vf2d uvbr = uvtl + ((source_size) * decal.vUVScale);
-            di.uv = new List<vf2d>() { new vf2d(uvtl), new vf2d(uvtl), new vf2d(uvbr), new vf2d(uvbr) };
+            di.uv = new List<vf2d>() { new vf2d(uvtl), new vf2d(uvtl.x, uvbr.y), new vf2d(uvbr), new vf2d(uvbr.x, uvtl.y) };
             di.w = new List<float>() { 1, 1, 1, 1 };
             di.mode = nDecalMode;
             vLayers[nTargetLayer].vecDecalInstance.Add(di);

@@ -7,7 +7,7 @@ namespace olc
     public class Sprite //1252 / 696
     {
         public Sprite() => (width, height) = (0, 0);
-        //public Sprite(string sImageFile, ResourcePack pack = null) => LoadFromFile(sImageFile, pack);
+        public Sprite(string sImageFile, ResourcePack pack = null) => LoadFromFile(sImageFile, pack);
         public Sprite(int w, int h)
         {
             width = w; height = h;
@@ -21,13 +21,7 @@ namespace olc
         }
 
 
-        //public Sprite(int w, int h)
-        //{
-        //    width = w; height = h;
-        //    pColData = new List<Pixel>((int)(width * height));
-        //    pColData.ForEach(o => o.n = Const.nDefaultPixel);
-        //}
-
+       
         public Const.rcode LoadFromFile(string sImageFile, ResourcePack pack = null)
         {
          //   UNUSED(pack);
@@ -40,7 +34,7 @@ namespace olc
         public int height = 0;
         public enum SpriteMode { NORMAL, PERIODIC }
         public enum Flip { NONE = 0, HORIZ = 1, VERT = 2 };
-        public ImageLoader loader;
+        public ImageLoader loader = new ImageLoaderBasic();
 
         //public Mode Mode;
         //public Flip Flip;
@@ -62,7 +56,7 @@ namespace olc
 
             }
         }
-        public bool SetPixel(Int32 x, Int32 y, Pixel p)
+        public bool SetPixel(int x, int y, Pixel p)
         {
             if (x >= 0 && x < width && y >= 0 && y < height)
             {

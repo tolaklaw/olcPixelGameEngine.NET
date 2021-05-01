@@ -674,6 +674,41 @@ namespace olc
             }
         }
 
+        public void DrawPartialSprite(int x, int y, Sprite sprite, int ox, int oy, int w, int h, float scale, Flip flip = Flip.NONE)
+        {
+            if (sprite == null)
+                return;
+
+            int fxs = 0, fxm = 1, fx = 0;
+            int fys = 0, fym = 1, fy = 0;
+            if (flip == Flip.HORIZ) { fxs = w - 1; fxm = -1; }
+            if (flip == Flip.VERT) { fys = h - 1; fym = -1; }
+
+            if (scale > 1)
+            {
+                fx = fxs;
+                for (int i = 0; i < w; i++, fx += fxm)
+                {
+                    fy = fys;
+                    for (int j = 0; j < h; j++, fy += fym)
+                        for (int _is = 0; _is < scale; _is++)
+                            for (int js = 0; js < scale; js++)
+                                Draw((int)(x + (i * scale) + _is), (int)(y + (j * scale) + js), sprite.GetPixel(fx + ox, fy + oy));
+                }
+            }
+            else
+            {
+                fx = fxs;
+                for (int i = 0; i < w; i++, fx += fxm)
+                {
+                    fy = fys;
+                    for (int j = 0; j < h; j++, fy += fym)
+                        Draw(x + i, y + j, sprite.GetPixel(fx + ox, fy + oy));
+                }
+            }
+        }
+
+
         // Draws a single line of text - traditional monospaced
         public void DrawString(vi2d pos, string sText, Pixel col, int scale = 1) => DrawString(pos.x, pos.y, sText, col, scale);
         public void DrawString(int x, int y, string sText, Pixel col, int scale = 1)
@@ -815,7 +850,7 @@ namespace olc
             vLayers[nTargetLayer].vecDecalInstance.Add(di);
         }
         // Draws a region of a decal, with optional scale and tinting
-        void DrawPartialDecal(vf2d pos, Decal decal, vf2d source_pos, vf2d source_size, vf2d scale, Pixel tint)
+        public void DrawPartialDecal(vf2d pos, Decal decal, vf2d source_pos, vf2d source_size, vf2d scale, Pixel tint)
         {
             vf2d vScreenSpacePos = new vf2d(
                 (float)((Math.Floor(pos.x) * vInvScreenSize.x) * 2.0f - 1.0f),
@@ -840,7 +875,7 @@ namespace olc
             vLayers[nTargetLayer].vecDecalInstance.Add(di);
         }
 
-        void DrawPartialDecal(vf2d pos, vf2d size, Decal decal, vf2d source_pos, vf2d source_size, Pixel tint)
+        public void DrawPartialDecal(vf2d pos, vf2d size, Decal decal, vf2d source_pos, vf2d source_size, Pixel tint)
         {
             vf2d vScreenSpacePos = new vf2d(
                 (float)((Math.Floor(pos.x) * vInvScreenSize.x) * 2.0f - 1.0f),
@@ -1205,12 +1240,11 @@ namespace olc
             if (vMousePosCache.x < 0) vMousePosCache.x = 0;
             if (vMousePosCache.y < 0) vMousePosCache.y = 0;
         }
-        public void olc_UpdateMouseWheel(Int32 delta) => nMouseWheelDeltaCache += delta;
-        public void olc_UpdateWindowSize(Int32 x, Int32 y)
+        public void olc_UpdateMouseWheel(int delta) => nMouseWheelDeltaCache += delta;
+        public void olc_UpdateWindowSize(int x, int y)
         {
             vWindowSize = new vi2d(x, y);
-            olc_UpdateViewport();
-            Console.WriteLine("olc_UpdateWindowSize");
+            olc_UpdateViewport();            
         }
 
         void olc_UpdateViewport()
@@ -1442,8 +1476,7 @@ namespace olc
 
 
             renderer = new Renderer_OGL33();
-            platform = new Platform_Windows();
-
+            platform = new Platform_Windows();            
 
             // Associate components with PGE instance
             Platform.PGE = this;

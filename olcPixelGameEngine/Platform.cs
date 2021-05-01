@@ -13,7 +13,7 @@ namespace olc
         public abstract rcode SetWindowTitle(string s);
         public abstract rcode StartSystemEventLoop();
         public abstract rcode HandleSystemEvent();
-        public static PixelGameEngine PGE;
+        public static PixelGameEngine PGE;        
     }
 
 

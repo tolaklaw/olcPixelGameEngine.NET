@@ -334,16 +334,18 @@ namespace olc
                 GL.BindTexture(TextureTarget.Texture2D, decal.decal.id);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_vbQuad);
+            Bvert[] pVertexMem = new Bvert[decal.points];
 
             for (int i = 0; i < decal.points; i++)
             {
-                //                pVertexMem[i] = new locVertex(new float[3] { decal.pos[i].x, decal.pos[i].y, decal.w[i] }, new vf2d(decal.uv[i].x, decal.uv[i].y), decal.tint[i]);
+                pVertexMem[i] = new Bvert(new float[3] { decal.pos[i].x, decal.pos[i].y, decal.w[i] }, new vf2d(decal.uv[i].x, decal.uv[i].y), decal.tint[i]);
             }
 
-            //          int vertexSize = Marshal.SizeOf(typeof(locVertex));
+            int vertexSize = Marshal.SizeOf(typeof(Bvert));
 
+            //GL.BufferData(BufferTarget.ArrayBuffer, decal.points)
             //locBufferData(0x8892, sizeof(locVertex) * decal.points, pVertexMem, 0x88E0);
-            //            Gl.BufferData(BufferTarget.ArrayBuffer, (uint)(vertexSize * decal.points), pVertexMem, BufferUsage.StreamDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (int)(vertexSize * decal.points), pVertexMem,  BufferUsageHint.StreamDraw);
 
             if (nDecalMode == DecalMode.WIREFRAME)
                 //glDrawArrays(GL_LINE_LOOP, 0, decal.points);

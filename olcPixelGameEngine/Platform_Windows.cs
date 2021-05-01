@@ -257,12 +257,12 @@ namespace olc
                 case Keys.Left: return Key.LEFT;
                 case Keys.Down: return Key.DOWN;
                 case Keys.Up: return Key.UP;
+                case Keys.Escape: return Key.ESCAPE;
 
                 case Keys.LeftBracket:
                 case Keys.Backslash:
                 case Keys.RightBracket:
                 case Keys.GraveAccent:
-                case Keys.Escape: 
                 case Keys.Enter:
                 case Keys.Tab:
                 case Keys.Backspace:

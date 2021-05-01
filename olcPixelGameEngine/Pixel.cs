@@ -17,6 +17,7 @@ namespace olc
         public static Pixel RED => new Pixel(255, 0, 0);
         public static Pixel BLUE => new Pixel(0, 0, 255);
         public static Pixel YELLOW => new Pixel(255, 255, 0);
+        public static Pixel GREEN => new Pixel(0, 255, 0);
         //public static Pixel RED = new {1,2,3};
         /*
          * 

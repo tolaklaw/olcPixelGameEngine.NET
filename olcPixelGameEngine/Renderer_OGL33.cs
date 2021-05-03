@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+
 //using OpenGL;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 //using OpenTK.Platform.Windows;
 //using OpenTK.Graphics;
@@ -14,66 +15,45 @@ namespace olc
 
     public unsafe class Renderer_OGL33 : Renderer
     {
-
-
-
         Window* window;
         const int OLC_MAX_VERTS = 128;
         bool bSync = false;
-        DecalMode nDecalMode = DecalMode.ADDITIVE; // -1? 
-        IntPtr glRenderContext;
-        IntPtr glDeviceContext;
-        int m_nFS = 0;
-        int m_nVS = 0;
+        DecalMode nDecalMode;  //= DecalMode.ADDITIVE; // -1? 
         int shaderProgram = 0;
         int m_vbQuad = 0;
         int m_vaQuad = 0;
         Renderable rendBlankQuad = new Renderable();
-        string[] strVS;
-        string[] strFS;
-        List<string> vertexShaders = new List<string>();
-        List<string> fragmentShaders = new List<string>();
-   //     Window* window = null;
         string fragmentShaderSource = @"   
                                                 #version 330 core
                                                 out vec4 pixel;
                                                 in vec2 oTex;                                                
+                                                in vec4 oCol;
                                                 uniform sampler2D sprTex;
                                                 
                                                 void main()
                                                 {
-                                                    pixel = texture(sprTex, oTex);
+                                                    pixel = texture(sprTex, oTex) ;
                                                 }
                 ";
-        /*
-                 "#version 330 core\n"
-             #endif
-                             "out vec4 pixel;\n""in vec2 oTex;\n"
-                             "in vec4 oCol;\n""uniform sampler2D sprTex;\n""void main(){pixel = texture(sprTex, oTex) * oCol;}";
-
-              */
-
-
+      
         string vertexShaderSource = @"
                                          #version 330 core
                                                 layout (location = 0) in vec3 aPos;
                                                 layout (location = 1) in vec2 aTex;
-                                                
+                                                layout (location = 2) in vec4 aCol;
                                                 out vec2 oTex;
+                                                out vec4 oCol;
                                                 
                                                 void main()
                                                 {
-                                                   gl_Position = vec4(aPos, 1.0);
+                                                   //float p = 1.0 / aPos.z;
+                                                   gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
                                                    oTex = aTex;
-                                                   
+                                                   oCol = aCol;
                                                 }
         ";
 
-        /*
-                   "layout(location = 0) in vec3 aPos;\n""layout(location = 1) in vec2 aTex;\n"
-                   "layout(location = 2) in vec4 aCol;\n""out vec2 oTex;\n""out vec4 oCol;\n"
-                   "void main(){ float p = 1.0 / aPos.z; gl_Position = p * vec4(aPos.x, aPos.y, 0.0, 1.0); oTex = p * aTex; oCol = aCol;}";
-           */
+     
         [StructLayout(LayoutKind.Explicit)]
         public struct Bvert
         {
@@ -140,65 +120,26 @@ namespace olc
             }
         }
 
-        public Renderer_OGL33()
-        {
-            //Gl.Initialize();
-        }
-
+ 
         public override void ApplyTexture(uint id)
         {
-            while (GL.GetError() != OpenTK.Graphics.OpenGL.ErrorCode.NoError) ;
             GL.BindTexture(TextureTarget.Texture2D, id);
-            //Gl.BindTexture(TextureTarget.Texture2d, id);
-            var error = GL.GetError();
-            if (error != OpenTK.Graphics.OpenGL.ErrorCode.NoError)
-            {
-                Console.WriteLine(error);
-            }
-
         }
 
         public override void ClearBuffer(Pixel p, bool bDepth)
         {
 
-            //GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            //Gl.ClearColor(1f, 1f, 1f, 1f);
             GL.ClearColor((float)(p.r) / 255.0f, (float)(p.g) / 255.0f, (float)(p.b) / 255.0f, (float)(p.a) / 255.0f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            //  if (bDepth) GL.Clear(ClearBufferMask.DepthBufferBit);
-
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
         }
 
 
         public override Const.rcode CreateDevice(List<IntPtr> parameters, bool bFullScreen, bool bVSYNC)
         {
-            // Create OpenGL Context
-
-            // Create Device Context
-            //glDeviceContext = Platform_Helper.GetDC(parameters[0]);
-            //OpenTK.Graphics.Wgl.Wgl.Arb. ChoosePixelFormat()
-            //Wgl.PIXELFORMATDESCRIPTOR pfd = new Wgl.PIXELFORMATDESCRIPTOR()
-            //{
-            //    nSize = (short)sizeof(Wgl.PIXELFORMATDESCRIPTOR),
-            //    dwFlags = Wgl.PixelFormatDescriptorFlags.DrawToWindow | Wgl.PixelFormatDescriptorFlags.SupportOpenGL | Wgl.PixelFormatDescriptorFlags.Doublebuffer,
-            //    cColorBits = 32,
-            //    iPixelType = Wgl.PixelFormatDescriptorPixelType.Rgba,
-            //    iLayerType = Wgl.PixelFormatDescriptorLayerType.Main
-            //};
-            //int pf = Wgl.ChoosePixelFormat(glDeviceContext, ref pfd);
-            //if (pf == 0) return Const.rcode.FAIL;
-            //Wgl.SetPixelFormat(glDeviceContext, pf, ref pfd);            
-
-
-               
-            GLFW.MakeContextCurrent(window);
+            
+            GLFW.MakeContextCurrent((OpenTK.Windowing.GraphicsLibraryFramework.Window*)window);
             
             GL.LoadBindings(new GLFWBindingsContext());
-            //glRenderContext = Wgl.CreateContext(glDeviceContext);
-            //if (glRenderContext == null) return Const.rcode.FAIL;
-            //Wgl.MakeCurrent(glDeviceContext, glRenderContext);
 
             int vertexShader = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vertexShader, vertexShaderSource);
@@ -206,7 +147,7 @@ namespace olc
 
             string infoLog = "";
             infoLog = GL.GetShaderInfoLog(vertexShader);
-            //GL.GetShader(vertexShader, ShaderParameter.CompileStatus, out int success);
+
             if (infoLog.Length > 0)
             {
                 Console.WriteLine("ERROR::SHADER::VERTEX::COMPILATION_FAILED " + infoLog);
@@ -256,6 +197,7 @@ namespace olc
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, vertsize, 0); GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, vertsize, (3 * sizeof(float))); GL.EnableVertexAttribArray(1);
+            //GL.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, false, vertsize, (4 * sizeof(byte))); GL.EnableVertexAttribArray(1);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
@@ -266,9 +208,9 @@ namespace olc
             rendBlankQuad.Sprite().GetData()[0] = Pixel.BLACK;
             rendBlankQuad.Decal().Update();
 
+           
             return Const.rcode.OK;
         }
-
         public override uint CreateTexture(int width, int height, bool filtered = false, bool clamp = true)
         {
             // unused width, height
@@ -290,15 +232,15 @@ namespace olc
 
             if (clamp)
             {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder); // Clamp);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder); 
             }
             else
             {
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
             }
-            GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, 0); //GL.MODULATE
+            //GL.TexEnv(TextureEnvTarget.TextureEnv, TextureEnvParameter.TextureEnvMode, 0); //GL.MODULATE
             return (uint)id;
 
 
@@ -321,7 +263,9 @@ namespace olc
 
         public override void DisplayFrame()
         {
+            //_controller.Update(1);
             GLFW.SwapBuffers(window);
+
             //if (bSync) DwmFlush(); // Woooohooooooo!!!! SMOOOOOOOTH!
         }
 
@@ -343,12 +287,9 @@ namespace olc
 
             int vertexSize = Marshal.SizeOf(typeof(Bvert));
 
-            //GL.BufferData(BufferTarget.ArrayBuffer, decal.points)
-            //locBufferData(0x8892, sizeof(locVertex) * decal.points, pVertexMem, 0x88E0);
             GL.BufferData(BufferTarget.ArrayBuffer, (int)(vertexSize * decal.points), pVertexMem,  BufferUsageHint.StreamDraw);
 
             if (nDecalMode == DecalMode.WIREFRAME)
-                //glDrawArrays(GL_LINE_LOOP, 0, decal.points);
                 GL.DrawArrays(PrimitiveType.LineLoop, 0, (int)decal.points);
             else
                 GL.DrawArrays(PrimitiveType.TriangleFan, 0, (int)decal.points);
@@ -368,7 +309,7 @@ namespace olc
                                                      new Bvert(new float[5] { +voffset, +voffset, 1.0f ,    1.0f * scale.x + offset.x,      0.0f * scale.y + offset.y }, tint)
                             };
             GL.BufferData(BufferTarget.ArrayBuffer, sizeof(Bvert) * numVerts, verts, BufferUsageHint.StreamDraw);
-            GL.BindTexture(TextureTarget.Texture2D, 3);
+           
             GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
         }
 

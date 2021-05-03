@@ -89,7 +89,7 @@ namespace olc
         public DecalMode mode;
         public uint points;
     };
-
+    public delegate void CustomRenderFunction();
     public class LayerDesc
     {
         public vf2d vOffset = new vf2d(0, 0);
@@ -100,7 +100,7 @@ namespace olc
         public uint nResID;
         public List<DecalInstance> vecDecalInstance = new List<DecalInstance>();
         public Pixel tint;
-        public Action funcHook;
+        public CustomRenderFunction funcHook;
         //function<void()> funcHook = nullptr;
     };
 

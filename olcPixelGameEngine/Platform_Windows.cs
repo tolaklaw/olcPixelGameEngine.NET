@@ -228,7 +228,7 @@ namespace olc
                 case Keys.D9: return Key.K9;
                 case Keys.Equal: return Key.EQUALS;                    
                 case Keys.A: return Key.A;
-                case Keys.B: return Key.D;
+                case Keys.B: return Key.B;
                 case Keys.C: return Key.C;
                 case Keys.D: return Key.D;
                 case Keys.E: return Key.E;
@@ -258,20 +258,29 @@ namespace olc
                 case Keys.Down: return Key.DOWN;
                 case Keys.Up: return Key.UP;
                 case Keys.Escape: return Key.ESCAPE;
+                case Keys.Tab: return Key.TAB;
+                case Keys.LeftAlt: return Key.OEM_1;
+                case Keys.RightAlt: return Key.OEM_2;
+                case Keys.LeftSuper:
+                case Keys.RightSuper: return Key.OEM_3;
+                case Keys.LeftShift:
+                case Keys.RightShift: return Key.SHIFT;
+                case Keys.LeftControl:
+                case Keys.RightControl: return Key.CTRL;
+                case Keys.Delete: return Key.DEL;
+                case Keys.PageUp: return Key.PGDN;
+                case Keys.PageDown: return Key.PGUP;
+                case Keys.Home: return Key.HOME;
+                case Keys.End: return Key.END;
+                case Keys.Backspace: return Key.BACK;
+
 
                 case Keys.LeftBracket:
                 case Keys.Backslash:
                 case Keys.RightBracket:
                 case Keys.GraveAccent:
                 case Keys.Enter:
-                case Keys.Tab:
-                case Keys.Backspace:
                 case Keys.Insert:
-                case Keys.Delete:
-                case Keys.PageUp:
-                case Keys.PageDown:
-                case Keys.Home:
-                case Keys.End:
                 case Keys.CapsLock:
                 case Keys.ScrollLock:
                 case Keys.NumLock:
@@ -319,14 +328,6 @@ namespace olc
                 case Keys.KeyPadAdd:
                 case Keys.KeyPadEnter:
                 case Keys.KeyPadEqual:
-                case Keys.LeftShift:
-                case Keys.LeftControl:
-                case Keys.LeftAlt:
-                case Keys.LeftSuper:
-                case Keys.RightShift:
-                case Keys.RightControl:
-                case Keys.RightAlt:
-                case Keys.RightSuper:
                 case Keys.Menu:
                 case Keys.Semicolon:
                 case Keys.Slash:

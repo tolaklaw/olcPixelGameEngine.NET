@@ -173,20 +173,21 @@ namespace olc
         {
             if (layer < vLayers.Count) vLayers[layer].tint = tint;
         }
-        public void SetLayerCustomRenderFunction(byte layer, Action function)
+        
+        public void SetLayerCustomRenderFunction(byte layer, CustomRenderFunction function)
         {
             if (layer < vLayers.Count) vLayers[layer].funcHook = function;
         }
 
         public List<LayerDesc> GetLayers() => vLayers;
-        public int CreateLayer()
+        public byte CreateLayer()
         {
             LayerDesc ld = new LayerDesc();
             ld.pDrawTarget = new Sprite(vScreenSize.x, vScreenSize.y);
             ld.nResID = renderer.CreateTexture(vScreenSize.x, vScreenSize.y);
             renderer.UpdateTexture(ld.nResID, ld.pDrawTarget);
             vLayers.Add(ld);
-            return vLayers.Count - 1;
+            return (byte)(vLayers.Count - 1);
         }
 
         // Change the pixel mode for different optimisations
